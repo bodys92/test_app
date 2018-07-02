@@ -13,9 +13,13 @@ Things you may want to cover:
 
 * Database creation
 
+$ rails db:migrate
+
 * Database initialization
 
 * How to run the test suite
+
+$ rails t
 
 * Services (job queues, cache servers, search engines, etc.)
 
