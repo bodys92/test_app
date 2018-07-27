@@ -2,3 +2,26 @@ tester:
   name: Dzony Kaskader
   email: dzon@example.com
   password_digest: <%= User.digest('password') %>
+  admin: true
+
+flash:
+  name: Barry Allen
+  email: barryallen@centralcity.com
+  password_digest: <%= User.digest('password') %>
+
+arrow:
+  name: Oliver Quenn
+  email: oliver@starcity.com
+  password_digest: <%= User.digest('password') %>
+
+zoom:
+  name: Hunter Zolomon
+  email: badguy@worldtwo.com
+  password_digest: <%= User.digest('password') %>
+
+<% 30.times do |n| %>
+user_<%=n+1%>:
+  name: <%="User-#{n+1}" %>
+  email: <%="mail-#{n+1}@example.com" %>
+  password_digest: <%= User.digest('password') %>
+<% end %>

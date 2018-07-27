@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
       flash[:success] = "Successful login!"
       log_in user
       params[:session][:remember_me] == "1" ? remember(user) : forget(user)
-      redirect_to user
+      redirect_back_or user
     else
       flash.now[:danger] = "Wrong email or password"
       # create error message
@@ -20,6 +20,7 @@ class SessionsController < ApplicationController
   end
 
   def new
+    
   end
 
 end
