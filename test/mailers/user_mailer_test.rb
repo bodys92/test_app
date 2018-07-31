@@ -15,6 +15,19 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal [@app_email], mail.from
     assert_match user.name,               mail.body.encoded
     assert_match user.activation_token,   mail.body.encoded
+    ##escape for example %40 == "@"
+    assert_match CGI.escape(user.email),  mail.body.encoded
+  end
+
+  test "reset password" do
+    user = users(:tester)
+    user.reset_token = User.token_new
+    mail = UserMailer.password_reset(user)
+    assert_equal "Forgotten Password", mail.subject
+    assert_equal [user.email], mail.to
+    assert_equal [@app_email], mail.from
+    assert_match user.name,               mail.body.encoded
+    assert_match user.reset_token,   mail.body.encoded
     assert_match CGI.escape(user.email),  mail.body.encoded
   end
 end
