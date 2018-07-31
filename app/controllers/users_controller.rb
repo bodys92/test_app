@@ -3,16 +3,14 @@ class UsersController < ApplicationController
   before_action :authorization, only: [:edit, :update]
   before_action :admin?, only: [:destroy]
 
-  def user_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
-
   def create
     @user = User.new(user_params)
     if @user.save
-      log_in @user
-      flash[:success] = "Successful registration!"
-      redirect_to @user # ekvivalent ~ redirect_to user_url(@user)
+      @user.send_activation_email
+      message = "Please check you email"
+      message = " to active your account"
+      flash[:info] = message
+      redirect_to root_url # ekvivalent ~ redirect_to user_url(@user)
     else
       render 'new'
     end
@@ -34,10 +32,15 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    unless @user.activated?
+    flash[:danger] = "User has ben not activated"
+    redirect_to root_url 
+    end
   end
 
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.where(activated: true).paginate(page: params[:page])
+    ###@users = User.paginate(page: params[:page])
   end
 
   def update
@@ -49,6 +52,8 @@ class UsersController < ApplicationController
         render 'edit'
       end
   end
+
+  ### Before Action 
 
   def admin?
     redirect_to(root_url) unless current_user.admin?  
@@ -65,6 +70,12 @@ class UsersController < ApplicationController
       flash[:danger] = "Please log in"
       redirect_to login_path
     end
+  end
+
+private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
 
 end

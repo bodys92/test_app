@@ -3,25 +3,35 @@ tester:
   email: dzon@example.com
   password_digest: <%= User.digest('password') %>
   admin: true
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 flash:
   name: Barry Allen
   email: barryallen@centralcity.com
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 arrow:
   name: Oliver Quenn
   email: oliver@starcity.com
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 zoom:
   name: Hunter Zolomon
   email: badguy@worldtwo.com
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 <% 30.times do |n| %>
 user_<%=n+1%>:
   name: <%="User-#{n+1}" %>
   email: <%="mail-#{n+1}@example.com" %>
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 <% end %>

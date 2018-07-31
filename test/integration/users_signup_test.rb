@@ -2,6 +2,10 @@ require 'test_helper'
 
 class UsersSignupTest < ActionDispatch::IntegrationTest
   
+  def setup
+    ActionMailer::Base.deliveries.clear
+  end
+
   test "Invalid sign up" do
     get signup_path
     assert_no_difference 'User.count' do
@@ -12,20 +16,40 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     end
 
     assert_template 'users/new'
-  
+    assert_select 'div#error_explanation'
+    assert_select 'div.field_with_errors'
   end
 
-  test "Valid sign up" do
+  test "Valid signup info with account activation" do
     get signup_path
     assert_difference 'User.count', 1 do
-      post users_path, params: {user: {name: "Rails Tutorial",
+      post users_path, params: {user: {name: "Example User",
                                         email:"example@railstutorial.org",
                                         password:"password",
                                         password_confirmation:"password"}}
     end
-
+    # Code verifies that exactly 1 message was delivered. 
+    # Because the deliveries array is global, we have to reset it in the setup
+    # method to prevent our code from breaking if any other tests deliver email
+    assert_equal 1, ActionMailer::Base.deliveries.size
+    # assigns lets us access instance variables in the corresponding action
+    user = assigns(:user)
+    assert_not user.activated?
+    # Try to log in before activation.
+    log_in_as(user)
+    assert_not is_logged_in?
+    get edit_account_activation_path("invalid_token", email: user.email)
+    assert_not is_logged_in?
+     # Valid token, wrong email
+    get edit_account_activation_path(user.activation_token, email:'wrong')
+    assert_not is_logged_in?
+    # Valid activation token
+    get edit_account_activation_path(user.activation_token, email: user.email)
+    assert user.reload.activated?
+    follow_redirect!
+    assert_template 'sessions/new'
+    log_in_as(user)
     follow_redirect!
     assert_template 'users/show'
-    assert is_logged_in?
   end
 end
