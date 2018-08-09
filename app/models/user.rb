@@ -1,6 +1,8 @@
 class User < ApplicationRecord
 
     attr_accessor :activation_token,:remember_token, :reset_token
+
+
     before_create :create_activation_digest
     before_save :downcase_email
     validates(:name, presence:true)
@@ -10,6 +12,7 @@ class User < ApplicationRecord
                     format: {with: VALID_EMAIL_REGEX}, 
                     uniqueness: {case_sensitive: false}
     has_secure_password
+    has_many :microposts, dependent: :destroy
     validates :password, presence: true, length: {minimum: 6},
                         allow_nil: true
 
@@ -43,7 +46,11 @@ class User < ApplicationRecord
             BCrypt::Password.new(digest) == token
         end
     end
-    
+
+    def feed
+        Micropost.where("user_id = ?", id)
+    end
+
     def forget
         update_attribute(:remember_digest, nil)
     end
@@ -65,6 +72,8 @@ class User < ApplicationRecord
     def password_token_expired?
         reset_send_at < 2.hours.ago
     end
+
+    
 private
     def create_activation_digest
         self.activation_token = User.token_new

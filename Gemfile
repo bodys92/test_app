@@ -6,6 +6,8 @@ ruby '2.5.1'
 gem 'faker',          '1.9.1'
 gem 'will_paginate', '~> 3.1.0'
 gem 'bootstrap-will_paginate', '1.0.0'
+gem 'carrierwave',             '1.2.3'
+gem 'mini_magick',             '4.8.0'
 
 
 # Converts Less to Sass and makes all the necessary Bootstrap files available to the current application.
