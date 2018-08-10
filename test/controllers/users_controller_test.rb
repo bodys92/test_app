@@ -3,7 +3,7 @@ require 'test_helper'
 class UsersControllerTest < ActionDispatch::IntegrationTest
 
   def setup
-    @user = users(:tester)
+    @test_user = users(:tester)
     @other_user = users(:flash)
   end
   
@@ -13,23 +13,23 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update without login" do
-    patch user_path(@user), params: {user: {name: @user.name,
-                                            email: @user.email}}
+    patch user_path(@test_user), params: {user: {name: @test_user.name,
+                                            email: @test_user.email}}
     assert_not flash.empty?
     assert_redirected_to login_path
   end  
 
   test "user edit wrong user" do
-    log_in_as(@user)
+    log_in_as(@test_user)
     get edit_user_path(@other_user)
     assert_not flash.empty?
     assert_redirected_to root_url
   end
 
   test "user update wrong user" do
-    log_in_as(@user)
-    patch user_path(@other_user), params: {user: {name: @user.name,
-                                            email: @user.email}}
+    log_in_as(@test_user)
+    patch user_path(@other_user), params: {user: {name: @test_user.name,
+                                            email: @test_user.email}}
     assert_not flash.empty?
     assert_redirected_to root_url
   end
@@ -50,7 +50,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect destroy when not logged in" do
   assert_no_difference 'User.count' do 
-    delete user_path(@user)
+    delete user_path(@test_user)
   end
   assert_redirected_to login_url
   end
@@ -58,8 +58,19 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should redirect destroy when logged in as a non-admin user" do
     log_in_as(@other_user)
     assert_no_difference 'User.count' do
-      delete user_path(@user)
+      delete user_path(@test_user)
     end
   assert_redirected_to root_url
-  end                                             
+  end       
+  
+  test "should redirect following when not logged in" do
+    get following_user_path(@test_user)
+    assert_redirected_to login_url
+  end
+
+  test "should redirect followers when not logged in" do
+    get followers_user_path(@test_user)
+    assert_redirected_to login_url
+  end
+  
 end

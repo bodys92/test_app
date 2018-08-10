@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:destroy, :edit, :index, :update]
+  before_action :logged_in_user, only: [:destroy, :edit, :index, :update,
+                                        :following, :followers]
   before_action :authorization, only: [:edit, :update]
   before_action :admin?, only: [:destroy]
 
@@ -52,6 +53,20 @@ class UsersController < ApplicationController
       else
         render 'edit'
       end
+  end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
 
 private
